@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MotoTrack</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0a1230">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root,:root[data-theme=dark]{--bg:#0a1230;--bg2:#0f1b45;--cd:#142156;--ln:#26367a;--tx:#e9eeff;--mu:#9aa8d6;--ac:#4f7cff;color-scheme:dark}
+:root[data-theme=light]{--bg:#edf1fb;--bg2:#fff;--cd:#fff;--ln:#d5dcf0;--tx:#0e1a3f;--mu:#56638c;--ac:#2f5bea;color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:background .3s,color .3s}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg2);z-index:30}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:4px;padding:8px 10px}
+h1{font-size:17px;margin:0 auto 0 4px}h2{font-size:18px;margin:0}h3{margin:16px 0 8px;font-size:15px}
+button,input,select,textarea{font:inherit;color:var(--tx)}
+button{background:var(--cd);border:1px solid var(--ln);border-radius:10px;padding:8px 12px;cursor:pointer;transition:transform .15s,border-color .2s}
+button:hover{border-color:var(--ac)}button:active{transform:scale(.95)}
+.ib{width:38px;height:38px;padding:0;font-size:17px;position:relative;flex:none}
+.ib.on{background:#ef444433;border-color:#ef4444}
+.bd{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:9px;font-size:11px;padding:0 5px;min-width:18px}
+.pri{background:var(--ac);border-color:var(--ac);color:#fff}.dng{color:#ef4444;border-color:#ef444466}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--ln);border-radius:10px;padding:10px}
+input[type=checkbox]{width:20px;height:20px;flex:none}
+main{max-width:760px;margin:0 auto;padding:14px 12px 110px}
+.mu{color:var(--mu);font-size:13px}.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.acts{display:flex;gap:8px;flex-wrap:wrap}.acts>button{flex:1}
+.card{background:var(--cd);border:1px solid var(--ln);border-left:4px solid var(--c,var(--ln));border-radius:14px;padding:14px;margin-bottom:12px;animation:in .4s both}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}@keyframes gr{from{width:0}}
+.info{display:flex;gap:14px;align-items:center}.phw{position:relative;flex:none}
+.ph{width:92px;height:92px;border-radius:14px;object-fit:cover;background:var(--bg);display:grid;place-items:center;font-size:40px;border:1px solid var(--ln)}
+.cam{position:absolute;right:-8px;bottom:-8px;width:32px;height:32px;font-size:14px}
+.odo{font-size:26px;font-weight:700}.odo small{font-size:14px;color:var(--mu)}.sum{margin:0 2px 10px}
+.badge{background:var(--c);color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.bar{height:10px;background:var(--bg);border-radius:6px;overflow:hidden;margin:10px 0 6px}
+.bar i{display:block;height:100%;background:var(--c);animation:gr .8s both}
+#bot{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bg2);border-top:1px solid var(--ln);display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))}
+#bot input{flex:1;min-width:0}
+#ov{position:fixed;inset:0;background:#0009;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50}
+#ov.on{opacity:1;pointer-events:auto}
+.sheet{background:var(--bg2);width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px;border:1px solid var(--ln);transform:translateY(40px);transition:transform .3s}
+.on>.sheet{transform:none}
+@media(min-width:700px){#ov{align-items:center}.sheet{border-radius:18px}}
+#dr{position:fixed;top:0;bottom:0;left:0;width:280px;max-width:84vw;background:var(--bg2);border-right:1px solid var(--ln);padding:calc(16px + env(safe-area-inset-top,0px)) 14px 16px;transform:translateX(-105%);transition:transform .3s;z-index:60}
+#dr.on{transform:none}.mi{display:block;width:100%;text-align:left;margin-top:10px}
+#dbk{position:fixed;inset:0;background:#0007;opacity:0;pointer-events:none;transition:opacity .3s;z-index:55}#dbk.on{opacity:1;pointer-events:auto}
+.f{display:grid;gap:10px}.f label{display:grid;gap:4px;font-size:13px;color:var(--mu)}
+.hi,.sr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--ln)}
+.sr .sn{flex:1;font-size:14px}.si{width:96px!important}.hi .acts{flex:none}
+#toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:var(--ac);color:#fff;padding:10px 16px;border-radius:12px;opacity:0;transition:.3s;z-index:70;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<header>
+<button class="ib" data-a="menu" aria-label="Menu">☰</button>
+<h1>🏍️ MotoTrack</h1>
+<button class="ib" data-a="srch" aria-label="Cari">🔍</button>
+<button class="ib" id="crit" data-a="crit" aria-label="Filter kritis">🔴<span class="bd" id="cb">0</span></button>
+<button class="ib" id="thm" data-a="thm" aria-label="Mode tampilan">🌙</button>
+<button class="ib" data-a="acct" aria-label="Profil">👤</button>
+</header>
+<div id="sb" hidden style="padding:8px 12px"><input id="qi" placeholder="Cari komponen…"></div>
+<main id="main"></main>
+<div id="bot" hidden>
+<input id="oi" type="number" min="0" inputmode="numeric" placeholder="Odometer baru (KM)">
+<button class="pri" data-a="odo">Simpan KM</button>
+<button class="ib" data-a="hist" aria-label="Riwayat">📋</button>
+<button class="ib" data-a="sett" aria-label="Pengaturan">⚙️</button>
+</div>
+<div id="dbk" data-a="cdr"></div>
+<aside id="dr"><h2>🏍️ MotoTrack</h2>
+<button class="mi" data-a="hist">📋 Riwayat Servis</button>
+<button class="mi" data-a="sett">⚙️ Pengaturan Komponen &amp; Interval</button>
+<button class="mi" data-a="ver">ℹ️ Versi Aplikasi</button></aside>
+<div id="ov"><div class="sheet"><div class="row" style="margin-bottom:10px"><h2 id="mt"></h2><button class="ib" data-a="cm">✕</button></div><div id="mb"></div></div></div>
+<input type="file" id="pf" accept="image/*" hidden>
+<div id="toast"></div>
+<script>
+const K='mototrack.v1',TY={matic:'Matic',bebek:'Bebek',manual:'Manual / Sport'},$=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n).toLocaleString('id-ID'),uid=()=>Math.random().toString(36).slice(2,10);
+const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const fdate=d=>d?new Date(d+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'';
+const D={
+common:[['Oli Mesin',2500,'Pelumas utama mesin agar komponen internal tidak aus dan suhu mesin terjaga.'],['Kampas Rem Depan',8000,'Pengereman utama; lebih cepat habis dibanding rem belakang.'],['Kampas Rem Belakang',12000,'Menjaga keseimbangan pengereman (cakram maupun tromol).'],['Filter Udara',10000,'Menyaring debu ke ruang bakar; jika kotor motor boros bensin & berat.'],['Busi',10000,'Memercikkan api pembakaran agar mesin mudah distarter dan tarikan responsif.'],['Minyak Rem',20000,'Mencegah rem blong akibat turunnya titik didih cairan rem.'],['Aki (Accu)',24000,'Penyuplai arus listrik untuk starter, lampu, klakson, dan sistem injeksi.'],['Ban Depan',25000,'Menjaga traksi dan kestabilan belok (ganti jika sudah menyentuh batas TWI).'],['Ban Belakang',20000,'Menanggung beban dan tenaga mesin lebih berat sehingga lebih cepat botak.'],['Oli Shockbreaker Depan',20000,'Menjaga redaman suspensi tetap empuk dan tidak mentok di jalan rusak.'],['Komstir (Bearing Setang)',30000,'Mengatur kelancaran belok setang agar tidak oblak atau terasa berat.']],
+matic:[['Oli Gardan (Transmisi)',6000,'Melumasi gigi rasio di CVT belakang (tiap 2x ganti oli mesin).'],['V-Belt (Van Belt)',24000,'Sabuk karet penggerak roda belakang; jika putus motor tidak bisa melaju.'],['Roller CVT',24000,'Mengatur bukaan pulley sesuai putaran mesin; jika peyang tarikan bergetar (gredek).'],['Piece Slide / Slider CVT',24000,'Penahan rumah roller agar tidak kocak dan berisik.'],['Per CVT & Kampas Ganda',35000,'Meneruskan putaran mesin ke mangkok kopling; jika tipis selip/getar saat akselerasi awal.'],['Air Radiator (Coolant)',15000,'Mendinginkan mesin berpendingin cairan (Vario 125/150/160, PCX, NMAX, Aerox).']],
+bebek:[['Rantai & Gear Set',20000,'Menyalurkan tenaga mesin ke roda belakang; ganti sepaket jika mata gear sudah runcing.'],['Karet Tromol (Damper)',20000,'Meredam hentakan saat perpindahan gigi agar tidak menyentak.'],['Kampas Kopling & Kopling Ganda',35000,'Menjaga perpindahan gigi halus dan tenaga tidak mengempos saat menanjak.']],
+manual:[['Filter Oli Mesin',6000,'Menyaring serpihan logam halus hasil gesekan kopling basah dan mesin (tiap 2x ganti oli).'],['Air Radiator (Coolant)',15000,'Menjaga suhu mesin stabil pada RPM tinggi atau perjalanan jauh (touring).'],['Rantai & Gear Set',20000,'Menyalurkan torsi besar ke roda belakang (rutin dilumasi tiap 500 km).'],['Kampas Kopling Manual',30000,'Meneruskan tenaga mesin ke transmisi; jika habis tarikan atas terasa selip/ngeden.'],['Kabel Kopling',25000,'Mencegah tuas kopling terasa keras atau putus mendadak di jalan.']]};
+let S={profiles:[],active:null,theme:'dark'},q='',crit=false,pend='',fn=null;
+try{Object.assign(S,JSON.parse(localStorage.getItem(K))||{})}catch(e){}
+S.profiles.forEach(p=>{p.history=p.history||[];p.comps=p.comps||[]});
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast('Penyimpanan penuh, coba foto yang lebih kecil')}};
+const cur=()=>S.profiles.find(p=>p.id===S.active)||null;
+const mk=t=>[...D.common,...D[t]].map(([name,interval,desc])=>({id:uid(),name,interval,desc,active:true,last:null,date:''}));
+const calc=(c,o)=>{const used=Math.max(0,o-(c.last||0)),p=Math.round(Math.max(0,Math.min(100,(c.interval-used)/c.interval*100)));
+const s=p>=80?['Sangat Baik','#10b981']:p>=60?['Baik','#22c55e']:p>=30?['Cukup','#3b82f6']:p>=10?['Mendekati','#eab308']:['Segera Perbaiki','#ef4444'];
+return{used,p,left:Math.max(0,c.interval-used),label:s[0],col:s[1]}};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2400)}
+const openM=(t,h)=>{$('#mt').textContent=t;$('#mb').innerHTML=h;$('#ov').classList.add('on')};
+const closeM=()=>$('#ov').classList.remove('on');
+const closeDr=()=>{$('#dr').classList.remove('on');$('#dbk').classList.remove('on')};
+const ask=(m,f)=>{fn=f;openM('Konfirmasi',`<p>${m}</p><div class="acts"><button data-a="cm">Batal</button><button class="dng" data-a="yes">Ya, lanjut</button></div>`)};
+const readImg=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const s=Math.min(1,640/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',.8))};i.onerror=no;i.src=r.result};r.onerror=no;r.readAsDataURL(f)});
+const card=x=>{const c=x.c;return`<article class="card" style="--c:${x.col}"><div class="row"><b>${esc(c.name)}</b><span class="badge"${x.p<30&&x.p>=10?' style="color:#1b1400"':''}>${x.label} · ${x.p}%</span></div><p class="mu" style="margin:4px 0">${esc(c.desc)}</p><div class="mu">Terakhir diganti: ${c.last==null?'belum diisi (dihitung dari 0 km)':fmt(c.last)+' km'}${c.date?' · '+fdate(c.date):''}</div><div class="bar"><i style="width:${x.p}%"></i></div><div class="row"><span>${fmt(x.used)} / ${fmt(c.interval)} km</span><b>Sisa ${fmt(x.left)} km</b></div><div class="acts" style="margin-top:10px"><button data-a="set" data-id="${c.id}">✏️ Atur KM</button><button class="pri" data-a="rep" data-id="${c.id}">✔ Sudah Diganti / Reset</button></div></article>`};
+function render(){
+document.documentElement.dataset.theme=S.theme;$('#thm').textContent=S.theme=='dark'?'🌙':'☀️';
+const m=cur(),M=$('#main');$('#bot').hidden=!m;
+if(!m){$('#cb').textContent=0;M.innerHTML=`<div class="card" style="text-align:center;padding:28px 18px"><div style="font-size:52px">🏍️</div><h2>Selamat datang di MotoTrack</h2><p class="mu">Belum ada motor tersimpan. Isi data kendaraanmu lewat tombol 👤 Profil / Akun di pojok kanan atas, lalu pantau kondisi komponennya berdasarkan odometer.</p><button class="pri" data-a="newP">+ Isi Data Motor</button></div>`;return}
+const L=m.comps.filter(c=>c.active).map(c=>({c,...calc(c,m.odo)})),nc=L.filter(x=>x.p<10).length;
+$('#cb').textContent=nc;$('#crit').classList.toggle('on',crit);
+const V=L.filter(x=>(!crit||x.p<10)&&(!q||(x.c.name+' '+x.c.desc).toLowerCase().includes(q))).sort((a,b)=>a.p-b.p||b.used-a.used);
+M.innerHTML=`<section class="card" style="--c:var(--ac)"><div class="info"><div class="phw">${m.photo?`<img class="ph" src="${m.photo}" alt="">`:'<div class="ph">🏍️</div>'}<button class="ib cam" data-a="photo" aria-label="Ganti foto">📷</button></div><div><h2>${esc(m.name)}</h2><div class="mu">${TY[m.type]}${m.spec?' · '+esc(m.spec):''}</div><div class="odo">${fmt(m.odo)} <small>km</small></div></div></div></section><div class="mu sum">${L.length} komponen aktif · <b style="color:#ef4444">${nc} kritis</b></div>`+(V.length?V.map(card).join(''):`<p class="mu" style="text-align:center">${crit&&!nc?'Tidak ada komponen kritis 🎉':'Tidak ada komponen yang cocok.'}</p>`)}
+function acctM(){const m=cur();
+openM('Profil / Akun',(m?`<div class="card" style="--c:var(--ac)"><b>${esc(m.name)}</b><div class="mu">Motor aktif · ${TY[m.type]} · ${fmt(m.odo)} km</div></div>`:'')+'<h3>Motor Tersimpan</h3>'+(S.profiles.length?'':'<p class="mu">Belum ada motor.</p>')+S.profiles.map(p=>`<div class="hi"><div><b>${esc(p.name)}</b>${p.id==S.active?' ✅':''}<br><span class="mu">${TY[p.type]} · ${fmt(p.odo)} km</span></div><div class="acts"><button data-a="pick" data-id="${p.id}">Pilih</button><button data-a="editP" data-id="${p.id}">✏️</button><button class="dng" data-a="delP" data-id="${p.id}">🗑</button></div></div>`).join('')+'<button class="pri" style="width:100%;margin-top:12px" data-a="newP">+ Tambah Motor</button>')}
+function profForm(id){const p=id?S.profiles.find(x=>x.id==id):{name:'',type:'matic',spec:'',odo:'',photo:''};pend=p.photo||'';
+openM(id?'Edit Profil Motor':'Tambah Motor',`<div class="f"><label>Merk &amp; Nama Motor<input id="fn" value="${esc(p.name)}" placeholder="Honda Vario 125"></label><label>Tipe Motor<select id="ft">${Object.entries(TY).map(([v,l])=>`<option value="${v}"${p.type==v?' selected':''}>${l}</option>`).join('')}</select></label><label>Spesifikasi Singkat<input id="fs" value="${esc(p.spec)}" placeholder="125 cc / 2020 / pendingin radiator"></label><label>Odometer Saat Ini (KM)<input id="fo" type="number" min="0" inputmode="numeric" value="${p.odo}"></label><label>Foto Motor (opsional)<input id="fp" type="file" accept="image/*"></label><img id="pv" class="ph" src="${p.photo||''}" alt=""${p.photo?'':' hidden'}><div class="acts"><button data-a="acct">← Kembali</button><button class="pri" data-a="saveP" data-id="${id||''}">Simpan</button></div></div>`)}
+function repDlg(id,rec){const m=cur(),c=m.comps.find(x=>x.id==id);
+openM(rec?'Sudah Diganti: '+c.name:'KM Terakhir: '+c.name,`<div class="f"><label>KM saat diganti<input id="rk" type="number" min="0" inputmode="numeric" value="${rec?m.odo:(c.last??'')}"></label><label>Tanggal penggantian (opsional)<input id="rd" type="date" value="${rec?today():(c.date||'')}"></label><small class="mu">Odometer saat ini: ${fmt(m.odo)} km</small><button class="pri" data-a="saveR" data-id="${id}" data-rec="${rec?1:0}">Simpan</button></div>`)}
+function histM(){const m=cur();if(!m)return;const H=[...m.history].sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.km-a.km);
+openM('Riwayat Servis',`<div class="acts" style="margin-bottom:8px"><button data-a="exp" data-id="json">⬇ JSON</button><button data-a="exp" data-id="txt">⬇ TXT</button><button class="dng" data-a="hAll">🗑 Hapus Semua</button></div>`+(H.length?H.map(h=>`<div class="hi"><div><b>${esc(h.comp)}</b><br><span class="mu">${fdate(h.date)} · ${fmt(h.km)} km</span></div><button class="dng" data-a="hDel" data-id="${h.id}">✕</button></div>`).join(''):'<p class="mu">Belum ada riwayat servis. Tekan “Sudah Diganti” pada kartu komponen untuk mencatat.</p>'))}
+function expM(k){const m=cur(),t=k=='json'?JSON.stringify({motor:m.name,odometer:m.odo,riwayat:m.history},null,2):'Riwayat Servis - '+m.name+'\n'+m.history.map(h=>`${h.date} | ${h.km} km | ${h.comp}`).join('\n');
+openM('Ekspor Riwayat',`<textarea id="xt" readonly rows="10">${esc(t)}</textarea><div class="acts" style="margin-top:8px"><button data-a="copy">📋 Salin</button><button class="pri" data-a="dl" data-id="${k}">⬇ Unduh .${k}</button></div><button data-a="hist" style="margin-top:8px">← Kembali</button>`)}
+function settM(){const m=cur();if(!m)return;
+openM('Pengaturan Komponen & Interval','<p class="mu">Ubah interval (KM), nonaktifkan komponen yang tidak relevan, atau tambah komponen sendiri.</p>'+m.comps.map(c=>`<div class="sr" data-id="${c.id}"><input type="checkbox" class="sa"${c.active?' checked':''}><span class="sn">${esc(c.name)}</span><input type="number" min="1" class="si" value="${c.interval}"><span class="mu">km</span>${c.custom?`<button class="dng" data-a="cDel" data-id="${c.id}">🗑</button>`:''}</div>`).join('')+'<h3>+ Komponen Baru</h3><div class="f"><input id="cn" placeholder="Nama komponen"><input id="ci" type="number" min="1" placeholder="Interval (KM)"><input id="cd" placeholder="Keterangan singkat (opsional)"><button data-a="cAdd">Tambah</button></div><button class="pri" style="width:100%;margin-top:12px" data-a="sS">Simpan</button>')}
+function harv(){const m=cur();$('#mb').querySelectorAll('.sr').forEach(r=>{const c=m.comps.find(x=>x.id==r.dataset.id),v=+r.querySelector('.si').value;if(!c)return;c.active=r.querySelector('.sa').checked;if(v>0)c.interval=Math.round(v)})}
+const A={
+menu(){$('#dr').classList.add('on');$('#dbk').classList.add('on')},cdr:closeDr,cm:closeM,
+srch(){const s=$('#sb');s.hidden=!s.hidden;if(s.hidden){q='';$('#qi').value='';render()}else $('#qi').focus()},
+crit(){crit=!crit;render()},thm(){S.theme=S.theme=='dark'?'light':'dark';save();render()},
+acct:acctM,newP:()=>profForm(null),editP:id=>profForm(id),pick(id){S.active=id;save();closeM();render()},
+delP(id){ask('Hapus profil motor ini beserta seluruh riwayatnya?',()=>{S.profiles=S.profiles.filter(p=>p.id!=id);if(S.active==id)S.active=S.profiles[0]?.id||null;save();render();acctM()})},
+saveP(id){const name=$('#fn').value.trim(),ov=$('#fo').value,odo=Math.round(+ov),type=$('#ft').value;
+if(!name)return toast('Nama motor wajib diisi');if(ov===''||odo<0)return toast('Isi odometer dengan angka yang valid');
+let p=id&&S.profiles.find(x=>x.id==id);
+if(!p){p={id:uid(),history:[],comps:mk(type)};S.profiles.push(p)}
+else if(p.type!==type){const old=p.comps;p.comps=[...mk(type).map(n=>old.find(o=>!o.custom&&o.name==n.name)||n),...old.filter(o=>o.custom)]}
+Object.assign(p,{name,type,spec:$('#fs').value.trim(),odo,photo:pend});S.active=p.id;save();closeM();render();toast('Profil disimpan ✔')},
+photo(){$('#pf').click()},
+odo(){const m=cur(),i=$('#oi'),v=+i.value;if(i.value==='')return toast('Masukkan angka KM terbaru');
+if(v<m.odo)return toast('KM baru tidak boleh lebih kecil dari '+fmt(m.odo)+' km');m.odo=Math.round(v);save();i.value='';render();toast('Odometer diperbarui ✔')},
+rep:id=>repDlg(id,true),set:id=>repDlg(id,false),
+saveR(id,b){const m=cur(),c=m.comps.find(x=>x.id==id),k=$('#rk').value,d=$('#rd').value;
+if(k===''||+k<0)return toast('Isi KM penggantian dengan benar');if(+k>m.odo)return toast('KM tidak boleh melebihi odometer ('+fmt(m.odo)+' km)');
+c.last=Math.round(+k);c.date=d;if(b.dataset.rec=='1')m.history.push({id:uid(),date:d||today(),km:c.last,comp:c.name});save();closeM();render();toast('Tersimpan ✔')},
+hist(){closeDr();histM()},sett(){closeDr();settM()},
+ver(){closeDr();openM('Versi Aplikasi','<p><b>MotoTrack v1.0</b></p><p class="mu">Pantau kondisi komponen sepeda motor secara berkala berdasarkan jarak tempuh (odometer). Data tersimpan lokal di browser perangkat ini (localStorage).</p>')},
+hDel(id){const m=cur();m.history=m.history.filter(h=>h.id!=id);save();histM()},
+hAll(){ask('Hapus semua riwayat servis motor ini?',()=>{cur().history=[];save();histM()})},
+exp:expM,copy(){const t=$('#xt');t.select();try{navigator.clipboard.writeText(t.value).catch(()=>document.execCommand('copy'))}catch(e){document.execCommand('copy')}toast('Disalin ke clipboard')},
+dl(k){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([$('#xt').value],{type:'text/plain'}));a.download='riwayat-mototrack.'+k;a.click();toast('Jika unduhan tidak mulai, gunakan Salin')},
+cAdd(){const m=cur(),n=$('#cn').value.trim(),i=Math.round(+$('#ci').value);if(!n||!(i>0))return toast('Isi nama dan interval (KM)');
+harv();m.comps.push({id:uid(),name:n,interval:i,desc:$('#cd').value.trim()||'Komponen custom',active:true,last:null,date:'',custom:true});save();settM()},
+cDel(id){harv();const m=cur();m.comps=m.comps.filter(c=>c.id!=id);save();settM()},
+sS(){harv();save();closeM();render();toast('Pengaturan disimpan ✔')},
+yes(){const f=fn;fn=null;closeM();f&&f()}};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset.id,b);else if(e.target.id=='ov')closeM()});
+document.addEventListener('change',async e=>{const t=e.target;if(t.id!='fp'&&t.id!='pf')return;const f=t.files[0];if(!f)return;
+try{const d=await readImg(f);if(t.id=='fp'){pend=d;$('#pv').src=d;$('#pv').hidden=false}else{cur().photo=d;save();render()}}catch(x){toast('Foto gagal dibaca')}t.value=''});
+$('#qi').oninput=e=>{q=e.target.value.trim().toLowerCase();render()};
+$('#oi').onkeydown=e=>{if(e.key=='Enter')A.odo()};
+onkeydown=e=>{if(e.key=='Escape'){closeM();closeDr()}};
+render();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(registration => {
+        console.log('MotoTrack PWA aktif:', registration.scope);
+      })
+      .catch(error => {
+        console.error('Service Worker gagal:', error);
+      });
+  });
+}
+</script>
+
+</body>
+</html>
